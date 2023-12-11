@@ -15,7 +15,7 @@ class DatabaseHelper {
 
   //constructor
   DatabaseHelper._();
-static  DatabaseHelper instance = DatabaseHelper._();
+  static DatabaseHelper instance = DatabaseHelper._();
 
   // get Db
   Database? db;
@@ -43,10 +43,10 @@ CREATE TABLE $dbTable(
     return await openDatabase(path, version: dbVersion, onCreate: _oncreate);
   }
 
-  void createNotes(NoteModel model) async {
+  Future<bool> createNotes(NoteModel model) async {
     var db = await getDb();
-    db.insert(dbTable, model.toMap());
-    facthData();
+    var rowsEffacted = await db.insert(dbTable, model.toMap());
+    return rowsEffacted > 0;
   }
 
   Future<List<NoteModel>> facthData() async {
@@ -62,16 +62,16 @@ CREATE TABLE $dbTable(
     return arryData;
   }
 
-  delete(int id) async {
+  Future<bool> delete(int id) async {
     var db = await getDb();
-    db.delete(dbTable, where: '$colId = ?', whereArgs: ['$id']);
-    facthData();
+    var rowEffected = await db.delete(dbTable, where: '$colId = $id');
+    return rowEffected > 0;
   }
 
-  update(NoteModel notesmodel) async {
+  Future<bool> update(NoteModel notesmodel) async {
     var db = await getDb();
-    db.update(dbTable, notesmodel.toMap(),
+    var rowEffected = await db.update(dbTable, notesmodel.toMap(),
         where: '$colId = ?', whereArgs: ['${notesmodel.modelId}']);
-    facthData();
+    return rowEffected > 0;
   }
 }
